@@ -7,231 +7,136 @@
     <style>
         /* --- 全域質感與變數設定 --- */
         :root {
-            --bg-color: #0b0e11;          /* 更深邃的交易所背景色 */
-            --card-bg: #161a1e;           /* 卡片深灰背景 */
-            --border-color: #2b3139;       /* 精緻邊框顏色 */
-            --text-main: #eaecef;         /* 主文字顏色 */
-            --text-sub: #848e9c;          /* 次文字顏色 */
-            --accent-blue: #c99400;       /* DigiFinex 風格金色突顯 */
-            --highlight: #1e2329;         /* 滑鼠停留高亮 */
-            --up-color: #0ecb81;          /* 漲跌幅：綠色 */
-            --down-color: #f6465d;        /* 漲跌幅：紅色 */
-            
-            /* 霓虹燈走勢圖顏色 */
-            --sparkline-color: #00e6ff;   /* 亮藍霓虹 */
+            --bg-color: #0b0e11;
+            --card-bg: #161a1e;
+            --border-color: #2b3139;
+            --text-main: #eaecef;
+            --text-sub: #848e9c;
+            --highlight: #1e2329;
+            --up-color: #0ecb81;
+            --down-color: #f6465d;
+            --accent-gold: #c99400;
+            --sparkline-color: #00e6ff;
         }
 
         body {
             font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg-color); color: var(--text-main);
+            margin: 0; padding: 0; display: flex; flex-direction: column;
+            align-items: center; min-height: 100vh;
         }
 
-        /* --- 頁首/標題區塊 --- */
+        /* --- 頁首與新聞跑馬燈 --- */
         header {
-            width: 100%;
-            padding: 30px 0;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-            margin-bottom: 20px;
+            width: 100%; padding: 25px 0 15px 0; text-align: center;
         }
 
-        h1 {
-            color: white;
-            margin: 0;
-            font-size: 2em;
-            letter-spacing: 1px;
-            font-weight: 700;
-        }
+        h1 { color: white; margin: 0 0 15px 0; font-size: 2em; font-weight: 700; letter-spacing: 1px; }
         h1::before { content: "⚡ "; font-size: 0.9em; }
 
-        /* --- 主內容區塊設定 (雙卡片設計) --- */
-        .main-content {
-            width: 95%;
-            max-width: 1200px;
-            margin-bottom: 80px;
-            display: flex;
-            flex-direction: column;
-            gap: 30px; /* 兩個卡片之間的間距 */
+        .ticker-wrap {
+            width: 100%; background: #000; padding: 10px 0; 
+            border-top: 1px solid var(--accent-gold); border-bottom: 1px solid var(--accent-gold);
+            overflow: hidden; white-space: nowrap; box-sizing: border-box;
+            margin-bottom: 30px; box-shadow: 0 0 10px rgba(201, 148, 0, 0.2);
+        }
+        
+        .ticker-content {
+            display: inline-block; padding-left: 100%;
+            /* 【已修改】放慢到 180 秒，正常人類閱讀速度 */
+            animation: ticker 180s linear infinite; 
+        }
+        
+        .ticker-content:hover { animation-play-state: paused; } /* 滑鼠停留在新聞上會暫停 */
+
+        .ticker-item { display: inline-block; padding: 0 2rem; color: #c9d1d9; font-family: 'Courier New', monospace; font-size: 0.95em; }
+        .ticker-source { color: var(--accent-gold); font-weight: bold; margin-right: 8px; }
+        .ticker-time { color: var(--text-sub); font-size: 0.85em; margin-right: 8px; }
+        .ticker-link { color: inherit; text-decoration: none; transition: color 0.2s; }
+        .ticker-link:hover { color: white; text-decoration: underline; }
+
+        @keyframes ticker {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(-100%, 0, 0); }
         }
 
-        /* 卡片共用樣式 */
+        /* --- 主內容區塊 --- */
+        .main-content {
+            width: 95%; max-width: 1200px; margin-bottom: 80px;
+            display: flex; flex-direction: column; gap: 30px;
+        }
+
         .data-card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.5);
         }
 
         .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 25px;
-            border-bottom: 1px solid var(--border-color);
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 25px; border-bottom: 1px solid var(--border-color);
         }
 
-        .card-title {
-            font-size: 1.4em;
-            font-weight: 600;
-            color: white;
-            margin: 0;
-        }
-
-        .update-time {
-            font-size: 0.85em;
-            color: var(--text-sub);
-        }
+        .card-title { font-size: 1.4em; font-weight: 600; color: white; margin: 0; }
+        .update-time { font-size: 0.85em; color: var(--text-sub); }
         
-        /* 幣安連線狀態指示器 */
-        .ws-status-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .live-indicator {
-            color: var(--up-color);
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
-        }
+        .ws-status-container { display: flex; align-items: center; gap: 10px; }
+        .live-indicator { color: var(--up-color); font-weight: bold; animation: pulse 1.5s infinite; }
 
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-        /* --- 表格質感設計 --- */
+        /* --- 表格設計 --- */
         .table-container { overflow-x: auto; }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 1.05em;
-            min-width: 900px; /* 幣種表格最小寬度 */
-        }
-
-        th, td {
-            padding: 18px 20px;
-            text-align: left;
-            vertical-align: middle;
-            white-space: nowrap; /* 防止文字折行 */
-        }
-
-        /* 表頭 */
-        th {
-            color: var(--text-sub);
-            font-weight: 500;
-            text-transform: uppercase;
-            font-size: 0.85em;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        /* 表格行 */
-        tbody tr {
-            border-bottom: 1px solid var(--border-color);
-            transition: background-color 0.2s;
-        }
-
+        table { width: 100%; border-collapse: collapse; font-size: 1.05em; min-width: 900px; }
+        th, td { padding: 18px 20px; text-align: left; vertical-align: middle; white-space: nowrap; }
+        th { color: var(--text-sub); font-weight: 500; text-transform: uppercase; font-size: 0.85em; border-bottom: 1px solid var(--border-color); }
+        tbody tr { border-bottom: 1px solid var(--border-color); transition: background-color 0.2s; }
         tbody tr:last-child { border-bottom: none; }
         tbody tr:hover { background-color: var(--highlight); }
 
-        /* 排名數字 */
         .rank-num { font-weight: 800; font-size: 1.1em; color: white; }
         tr:nth-child(1) .rank-num { color: #ffd700; font-size: 1.3em; } 
         tr:nth-child(2) .rank-num { color: #c0c0c0; font-size: 1.25em; } 
         tr:nth-child(3) .rank-num { color: #cd7f32; font-size: 1.2em; } 
 
-        /* 幣種資訊 */
         .coin-wrapper { display: flex; align-items: center; gap: 12px; }
-        .coin-img-container {
-            width: 32px; height: 32px;
-            display: flex; justify-content: center; align-items: center;
-            background-color: white; border-radius: 50%; padding: 2px;
-        }
+        .coin-img-container { width: 32px; height: 32px; display: flex; justify-content: center; align-items: center; background-color: white; border-radius: 50%; padding: 2px; }
         .coin-img { max-width: 90%; max-height: 90%; }
         .coin-name { font-weight: 600; color: white; }
         .coin-symbol { color: var(--text-sub); font-size: 0.85em; text-transform: uppercase; margin-left: 5px; }
 
-        /* --- 價格與數據特效設定 --- */
-        
-        /* 幣安極速價格 (USDT) 欄位樣式與閃爍特效 */
         .live-price-container {
-            font-family: 'Courier New', monospace; /* 使用等寬字體讓價格不抖動 */
-            color: white;
-            font-weight: bold;
-            font-size: 1.1em;
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            transition: background-color 0.3s, color 0.3s; /* 動態閃爍 */
+            font-family: 'Courier New', monospace; color: white; font-weight: bold; font-size: 1.1em;
+            display: inline-block; padding: 4px 8px; border-radius: 4px; transition: background-color 0.3s, color 0.3s;
         }
-        
-        /* 閃爍：漲(綠) */
-        .flash-up {
-            background-color: rgba(14, 203, 129, 0.25);
-            color: var(--up-color);
-        }
-        
-        /* 閃爍：跌(紅) */
-        .flash-down {
-            background-color: rgba(246, 70, 93, 0.25);
-            color: var(--down-color);
-        }
+        .flash-up { background-color: rgba(14, 203, 129, 0.25); color: var(--up-color); }
+        .flash-down { background-color: rgba(246, 70, 93, 0.25); color: var(--down-color); }
 
-        /* 預設非極速數據文字 */
         .data-text { color: var(--text-main); font-family: 'Courier New', monospace; font-size: 0.95em; }
-        
-        /* 漲跌幅顏色 */
         .price-up { color: var(--up-color); font-weight: bold; }
         .price-down { color: var(--down-color); font-weight: bold; }
 
-        /* --- 【優化】霓虹燈亮色走勢圖特效 (Sparkline) --- */
-        .sparkline-img {
-            width: 110px;
-            height: 38px;
-            /* 終極亮色濾鏡組合拳：
-               1. brightness(0) invert(1) => 強制將黑線轉為「純白線」
-               2. drop-shadow => 幫白線加上霓虹燈亮藍色發光特效，確保清晰可見 */
-            filter: brightness(0) invert(1) 
-                    drop-shadow(0 0 3px var(--sparkline-color)) 
-                    drop-shadow(0 0 1px var(--sparkline-color)); 
-        }
+        .sparkline-img { width: 110px; height: 38px; filter: brightness(0) invert(1) drop-shadow(0 0 3px var(--sparkline-color)) drop-shadow(0 0 1px var(--sparkline-color)); }
+        .state-msg { text-align: center; padding: 50px; color: var(--accent-gold); font-size: 1.1em; font-weight: 500; }
 
-        /* --- 板塊排行表格專用樣式 --- */
-        #categoryTable { min-width: 600px; } /* 板塊表格不需那麼寬 */
-        .category-name { font-weight: 600; color: white; font-size: 1.1em; }
-
-        /* 載入與錯誤狀態 */
-        .state-msg { text-align: center; padding: 50px; color: #ffd700; font-size: 1.1em; font-weight: 500; }
-
-        /* --- 專屬頁尾 --- */
         footer {
-            width: 100%; text-align: center; padding: 18px 0;
-            background-color: var(--card-bg); border-top: 1px solid var(--border-color);
-            position: fixed; bottom: 0; color: var(--text-sub);
+            width: 100%; text-align: center; padding: 18px 0; background-color: var(--card-bg); 
+            border-top: 1px solid var(--border-color); position: fixed; bottom: 0; color: var(--text-sub);
             font-size: 0.9em; z-index: 10;
         }
-        
     </style>
 </head>
 <body>
 
     <header>
         <h1>DigiFinex 專用熱門幣追蹤排行榜</h1>
+        <div class="ticker-wrap">
+            <div class="ticker-content" id="newsTicker">
+                <span class="ticker-item">正在連接全球新聞資料庫...</span>
+            </div>
+        </div>
     </header>
     
     <div class="main-content">
-        
         <div class="data-card">
             <div class="card-header">
                 <h2 class="card-title">🔥 今日最熱門加密貨幣</h2>
@@ -245,7 +150,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 5%">#</th>
+                            <th style="width: 5%">熱度</th>
                             <th style="width: 30%">加密貨幣</th>
                             <th style="width: 18%">極速價格 (USDT)</th>
                             <th style="width: 15%">24H 漲跌</th>
@@ -254,9 +159,7 @@
                         </tr>
                     </thead>
                     <tbody id="cryptoTableBody">
-                        <tr>
-                            <td colspan="6" class="state-msg">正在載入即時盤面報價...</td>
-                        </tr>
+                        <tr><td colspan="6" class="state-msg">正在載入即時盤面報價...</td></tr>
                     </tbody>
                 </table>
             </div>
@@ -267,127 +170,115 @@
                 <h2 class="card-title">🚀 熱門生態板塊 (Top 6)</h2>
                 <div class="update-time" id="categoryUpdateTime">正在分析資金流向...</div>
             </div>
-            
             <div class="table-container">
-                <table id="categoryTable">
+                <table>
                     <thead>
                         <tr>
-                            <th style="width: 10%">熱度</th>
+                            <th style="width: 10%">排行</th>
                             <th style="width: 60%">生態板塊 (Sector)</th>
                             <th style="width: 30%">24H 總市值漲跌</th>
                         </tr>
                     </thead>
                     <tbody id="categoryTableBody">
-                        <tr>
-                            <td colspan="3" class="state-msg">正在計算板塊權重...</td>
-                        </tr>
+                        <tr><td colspan="3" class="state-msg">正在計算板塊權重...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
-
     </div>
 
-    <footer>
-        DigiFinex Eddy小游製作
-    </footer>
+    <footer>DigiFinex Eddy小游製作</footer>
 
     <script>
-        // API 與 WebSocket 設定
         const CG_API_URL = 'https://api.coingecko.com/api/v3/search/trending';
-        let binanceWs = null; // 儲存幣安 WebSocket 連線
-        const previousPrices = {}; // 用來記憶上一次的價格，判斷是漲還是跌
+        const NEWS_API_URL = 'https://api.rss2json.com/v1/api.json?rss_url=https://cointelegraph.com/rss'; 
+        let binanceWs = null;
+        const previousPrices = {};
 
-        // 統一格式化時間的函式
-        function getNowTime() {
-            return new Date().toLocaleTimeString('zh-TW', { hour12: false });
+        function getNowTime() { return new Date().toLocaleTimeString('zh-TW', { hour12: false }); }
+
+        function formatNumber(num) {
+            return parseFloat(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 6 });
         }
 
-        // 格式化數字 (加上逗號，保留小數點)
-        function formatPriceNumber(num) {
-            const parsedNum = parseFloat(num);
-            if (isNaN(parsedNum)) return '-';
-            
-            // 針對小於 1 美元的微型代幣，保留更多小數點以防顯示為 0
-            const fractionDigits = parsedNum < 1 ? 6 : 2;
-            
-            return parsedNum.toLocaleString('en-US', { 
-                minimumFractionDigits: 2, 
-                maximumFractionDigits: fractionDigits 
-            });
-        }
-
-        // 統一處理漲跌幅格式與顏色的函式
         function formatChange(value) {
-            if (value === undefined || value === null) {
-                return '<span style="color: #848e9c">-</span>';
-            }
-            const isPositive = value >= 0;
-            const sign = isPositive ? '+' : '';
-            const colorClass = isPositive ? 'price-up' : 'price-down';
-            return `<span class="${colorClass}">${sign}${value.toFixed(2)}%</span>`;
+            if (value === undefined || value === null) return '<span style="color: #848e9c">-</span>';
+            const isPos = value >= 0;
+            return `<span class="${isPos ? 'price-up' : 'price-down'}">${isPos ? '+' : ''}${value.toFixed(2)}%</span>`;
         }
 
-        // === 主函式：初始化網頁 ===
+        // --- 1. 抓取即時新聞 ---
+        async function fetchNews() {
+            try {
+                const res = await fetch(NEWS_API_URL);
+                if (!res.ok) throw new Error('Network response was not ok');
+                const json = await res.json();
+                
+                if (!json.items || json.items.length === 0) throw new Error('No news items found');
+                
+                const newsData = json.items.slice(0, 15); 
+                
+                const tickerElement = document.getElementById('newsTicker');
+                tickerElement.innerHTML = ''; 
+
+                newsData.forEach(news => {
+                    const date = new Date(news.pubDate.replace(/-/g, '/'));
+                    const timeStr = isNaN(date.getTime()) ? '最新' : date.toLocaleTimeString('zh-TW', { hour: '2-digit', minute: '2-digit', hour12: false });
+                    
+                    const span = document.createElement('span');
+                    span.className = 'ticker-item';
+                    span.innerHTML = `
+                        <span class="ticker-time">[${timeStr}]</span>
+                        <span class="ticker-source">CoinTelegraph :</span>
+                        <a href="${news.link}" target="_blank" class="ticker-link">${news.title}</a>
+                    `;
+                    tickerElement.appendChild(span);
+                });
+            } catch (err) {
+                console.error("News fetch error:", err);
+                document.getElementById('newsTicker').innerHTML = '<span class="ticker-item" style="color:#f6465d;">⚠️ 無法載入最新新聞，請檢查網路連線或稍後重試。</span>';
+            }
+        }
+
+        // --- 2. 抓取 CoinGecko 熱門數據 ---
         async function initDashboard() {
             try {
-                // 1. 先從 CoinGecko 取得所有趨勢基礎數據 (包含板塊)
                 const response = await fetch(CG_API_URL);
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const data = await response.json();
                 
-                const timeStr = getNowTime();
-
-                // 2. 渲染【熱門幣種】表格骨架 (先用 CG 舊價格填入)
                 renderCoinsTable(data.coins);
-                
-                // 3. 渲染【熱門板塊】表格 (這部分保持原本的定時刷新邏輯)
                 renderCategoriesTable(data.categories);
-                document.getElementById('categoryUpdateTime').innerText = `最後分析：${timeStr}`;
+                document.getElementById('categoryUpdateTime').innerText = `最後分析：${getNowTime()}`;
 
-                // 4. 【關鍵】拿到幣種清單後，啟動幣安 WebSocket 極速連線
                 connectBinanceWebSocket(data.coins);
-
             } catch (error) {
-                console.error("Fetch error:", error);
-                const errMsg = '<tr><td colspan="10" class="state-msg" style="color: #f6465d;">數據同步失敗，請檢查網路。</td></tr>';
-                document.getElementById('cryptoTableBody').innerHTML = errMsg;
-                document.getElementById('categoryTableBody').innerHTML = errMsg;
+                document.getElementById('cryptoTableBody').innerHTML = '<tr><td colspan="6" class="state-msg" style="color: #f6465d;">數據同步失敗，請稍後重試。</td></tr>';
             }
         }
 
-        // --- 功能一：渲染熱門幣種表格骨架 ---
         function renderCoinsTable(coins) {
             const tableBody = document.getElementById('cryptoTableBody');
             tableBody.innerHTML = ''; 
 
             coins.forEach((item, index) => {
                 const coin = item.item;
-                // 轉為大寫代號，例如 btc => BTC
                 const symbol = coin.symbol.toUpperCase();
-                
-                // 初始化價格 (顯示 CoinGecko 舊價格 + 美金符號，並預設加上 id)
-                const cgPrice = coin.data?.price ? coin.data.price : '載入中...';
-                
-                // 走勢圖：直接使用 API 提供之 SVG 網址
-                const sparklineUrl = coin.data?.sparkline;
-                const sparklineHtml = sparklineUrl ? `<img src="${sparklineUrl}" class="sparkline-img" alt="7d trend">` : '<span style="color:#555">無圖表</span>';
+                const priceDisplay = coin.data?.price ? coin.data.price : '載入中...';
+                const sparklineHtml = coin.data?.sparkline ? `<img src="${coin.data.sparkline}" class="sparkline-img" alt="trend">` : '<span style="color:#555">無圖表</span>';
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><span class="rank-num">${index + 1}</span></td>
                     <td>
                         <div class="coin-wrapper">
-                            <div class="coin-img-container">
-                                <img src="${coin.large}" alt="${coin.name}" class="coin-img">
-                            </div>
+                            <div class="coin-img-container"><img src="${coin.large}" class="coin-img"></div>
                             <div>
                                 <span class="coin-name">${coin.name}</span>
                                 <span class="coin-symbol">${symbol}</span>
                             </div>
                         </div>
                     </td>
-                    <td><span class="live-price-container" id="price-${symbol}">${cgPrice}</span></td>
+                    <td><span class="live-price-container" id="price-${symbol}">${priceDisplay}</span></td>
                     <td>${formatChange(coin.data?.price_change_percentage_24h?.usd)}</td>
                     <td><span class="data-text">${coin.data?.total_volume || '-'}</span></td>
                     <td>${sparklineHtml}</td>
@@ -396,129 +287,75 @@
             });
         }
 
-        // --- 功能二：渲染熱門生態板塊 (Top 6) (已加回) ---
         function renderCategoriesTable(categories) {
             const tableBody = document.getElementById('categoryTableBody');
             tableBody.innerHTML = '';
-
-            if (!categories || categories.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="3" class="state-msg" style="color:#848e9c">暫無板塊數據</td></tr>';
-                return;
-            }
-
-            // API 預設回傳 6 個熱門板塊，我們全部顯示
             categories.forEach((cat, index) => {
-                const name = cat.name;
-                // 板塊 24H 總市值漲跌幅
-                const changeValue = cat.data?.market_cap_change_percentage_24h?.usd;
-                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td><span class="rank-num">${index + 1}</span></td>
-                    <td>
-                        <span class="category-name">${name}</span>
-                    </td>
-                    <td>${formatChange(changeValue)}</td>
+                    <td><span style="font-weight: 600; color: white; font-size: 1.1em;">${cat.name}</span></td>
+                    <td>${formatChange(cat.data?.market_cap_change_percentage_24h?.usd)}</td>
                 `;
                 tableBody.appendChild(row);
             });
         }
 
-        // --- 功能三：連接幣安 WebSocket，實現極速報價與閃爍 ---
+        // --- 3. Binance WebSocket 報價 ---
         function connectBinanceWebSocket(coins) {
-            if (!coins) return;
-
-            // 如果已有連線，先關閉
             if (binanceWs) binanceWs.close();
 
-            // 整理出幣安需要的訂閱格式 (例如: btcusdt@ticker, solusdt@ticker)
             const streams = coins.map(item => `${item.item.symbol.toLowerCase()}usdt@ticker`).join('/');
             const wsUrl = `wss://stream.binance.com:9443/stream?streams=${streams}`;
 
             binanceWs = new WebSocket(wsUrl);
 
-            // 當連線成功打開時
-            binanceWs.onopen = () => {
-                document.getElementById('wsStatus').innerText = '🟢 幣安報價中心連線中';
-            };
+            binanceWs.onopen = () => { document.getElementById('wsStatus').innerText = '🟢 幣安極速報價連線中'; };
 
-            // 當幣安傳送新價格推播過來時觸發 (核心邏輯)
             binanceWs.onmessage = (event) => {
                 const message = JSON.parse(event.data);
-                
-                // 從 stream 名稱中解析出代號 (例如: from "btcusdt@ticker" get "BTC")
-                const streamName = message.stream;
-                const symbol = streamName.split('usdt')[0].toUpperCase();
-                
-                // 取得最新數據
-                const newData = message.data;
-                const newPrice = parseFloat(newData.c); // "c" 代表最新成交價 (Close price)
-                
-                // 呼叫更新 UI 函數
+                const symbol = message.stream.split('usdt')[0].toUpperCase();
+                const newPrice = parseFloat(message.data.c);
                 updateLivePriceUI(symbol, newPrice);
             };
-
-            // 當連線發生錯誤或中斷時
-            binanceWs.onerror = () => {
-                document.getElementById('wsStatus').innerText = '🔴 報價連線中斷';
-            };
             
-            binanceWs.onclose = () => {
-                document.getElementById('wsStatus').innerText = '⚪ 報價連線已關閉，正在重連...';
-                // 可以在這裡寫重連邏輯，但為了演示保持乾淨
-            };
+            binanceWs.onerror = () => { document.getElementById('wsStatus').innerText = '🔴 報價連線中斷'; };
         }
 
-        // --- 功能四：【優化】更新網頁價格並加上閃爍特效 ---
         function updateLivePriceUI(symbol, newPrice) {
-            // 尋找對應的 HTML 元素
             const priceElement = document.getElementById(`price-${symbol}`);
-            if (!priceElement) return; // 如果這個幣不在表格上，就略過 (防呆)
+            if (!priceElement) return;
 
-            // 取得上一次的價格，如果沒有記憶過，預設為當前價格
             const oldPrice = previousPrices[symbol] || newPrice;
+            const formattedPrice = '$' + formatNumber(newPrice);
             
-            // 格式化新價格 (加上 $ 符號)
-            const formattedPrice = '$' + formatPriceNumber(newPrice);
-            
-            // 【閃爍邏輯】只有當價格真的改變時才觸發動畫
             if (newPrice !== oldPrice) {
-                // 更新數字
                 priceElement.innerText = formattedPrice;
-                
-                // 判斷漲跌決定閃爍顏色
                 if (newPrice > oldPrice) {
-                    // 漲：閃一下綠色
                     priceElement.classList.add('flash-up');
                     priceElement.classList.remove('flash-down');
                 } else {
-                    // 跌：閃一下紅色
                     priceElement.classList.add('flash-down');
                     priceElement.classList.remove('flash-up');
                 }
-
-                // 0.35秒後自動移除閃爍特效樣式，回到正常狀態，等待下一次跳動
-                setTimeout(() => {
-                    priceElement.classList.remove('flash-up', 'flash-down');
-                }, 350);
-                
+                setTimeout(() => { priceElement.classList.remove('flash-up', 'flash-down'); }, 350);
             } else if (!previousPrices[symbol]) {
-                // 第一次載入價格時，直接顯示，不閃爍
                 priceElement.innerText = formattedPrice;
             }
-
-            // 更新記憶體中的價格，做為下一次比較的基準
             previousPrices[symbol] = newPrice;
         }
 
-        // === 網頁啟動流程 ===
+        // 啟動所有功能
+        window.onload = () => {
+            initDashboard();
+            fetchNews(); // 啟動新聞跑馬燈
+        };
         
-        // 1. 網頁載入完成後立即執行一次初始化
-        window.onload = initDashboard;
-        
-        // 2. 為了板塊排行與走勢圖等非即時數據，設定每 60 秒刷新一次基礎清單 (這也會自動重連 WebSocket)
-        setInterval(initDashboard, 60000); 
+        // 每 60 秒刷新一次排名與新聞
+        setInterval(() => {
+            initDashboard();
+            fetchNews();
+        }, 60000); 
     </script>
-
 </body>
 </html>

@@ -7,13 +7,15 @@
     <style>
         /* --- 全域質感設定 --- */
         :root {
-            --bg-color: #0d1117;          /* 極深藍黑背景 */
-            --card-bg: #161b22;           /* 卡片深灰背景 */
-            --border-color: #30363d;       /* 精緻邊框顏色 */
-            --text-main: #c9d1d9;         /* 主文字顏色 */
-            --text-sub: #8b949e;          /* 次文字顏色 */
-            --accent-blue: #58a6ff;       /* 亮藍色突顯 */
-            --highlight: #21262d;         /* 滑鼠停留高亮 */
+            --bg-color: #0d1117;          
+            --card-bg: #161b22;           
+            --border-color: #30363d;       
+            --text-main: #c9d1d9;         
+            --text-sub: #8b949e;          
+            --accent-blue: #58a6ff;       
+            --highlight: #21262d;         
+            --up-color: #10b981;          /* 漲跌幅：綠色 */
+            --down-color: #ef4444;        /* 漲跌幅：紅色 */
         }
 
         body {
@@ -54,20 +56,20 @@
 
         /* --- 主內容區塊 --- */
         .container {
-            width: 90%;
-            max-width: 900px;
+            width: 95%;
+            max-width: 1000px;
             background: var(--card-bg);
             border: 1px solid var(--border-color);
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            overflow: hidden; /* 確保圓角效果 */
-            margin-bottom: 60px; /* 給頁尾預留空間 */
+            overflow: hidden; 
+            margin-bottom: 80px; 
         }
 
-        /* 頂部功能列 */
+        /* 頂部功能列 (已隱藏資料來源) */
         .tools-bar {
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-end; /* 只留更新時間靠右 */
             align-items: center;
             padding: 15px 25px;
             background-color: rgba(255,255,255,0.03);
@@ -79,17 +81,6 @@
             color: var(--text-sub);
         }
 
-        .data-source {
-            font-size: 0.85em;
-            color: var(--text-sub);
-            text-decoration: none;
-            padding: 5px 10px;
-            background: var(--highlight);
-            border-radius: 20px;
-            transition: color 0.2s;
-        }
-        .data-source:hover { color: var(--accent-blue); }
-
         /* --- 表格質感設計 --- */
         table {
             width: 100%;
@@ -98,8 +89,9 @@
         }
 
         th, td {
-            padding: 20px 25px;
+            padding: 18px 20px;
             text-align: left;
+            white-space: nowrap; /* 防止文字折行 */
         }
 
         /* 表頭 */
@@ -133,9 +125,9 @@
             font-size: 1.1em;
             color: white;
         }
-        tr:nth-child(1) .rank-num { color: #ffd700; font-size: 1.3em; } /* 金 */
-        tr:nth-child(2) .rank-num { color: #c0c0c0; font-size: 1.25em; } /* 銀 */
-        tr:nth-child(3) .rank-num { color: #cd7f32; font-size: 1.2em; } /* 銅 */
+        tr:nth-child(1) .rank-num { color: #ffd700; font-size: 1.3em; } 
+        tr:nth-child(2) .rank-num { color: #c0c0c0; font-size: 1.25em; } 
+        tr:nth-child(3) .rank-num { color: #cd7f32; font-size: 1.2em; } 
 
         /* 幣種資訊 */
         .coin-wrapper {
@@ -145,14 +137,13 @@
         }
 
         .coin-img-container {
-            width: 38px;
-            height: 38px;
+            width: 35px;
+            height: 35px;
             display: flex;
             justify-content: center;
             align-items: center;
-            background-color: white; /* 確保不管什麼 logo 都有白底，更有質感 */
+            background-color: white; 
             border-radius: 50%;
-            box-shadow: 0 0 5px rgba(255,255,255,0.1);
             padding: 2px;
         }
 
@@ -164,27 +155,36 @@
         .coin-name {
             font-weight: 600;
             color: white;
-            font-size: 1.1em;
+            font-size: 1.05em;
         }
 
         .coin-symbol {
             color: var(--text-sub);
-            font-size: 0.9em;
+            font-size: 0.85em;
             text-transform: uppercase;
             margin-left: 5px;
         }
 
-        /* 市值排名與價格 */
-        .mcap-rank {
-            color: var(--accent-blue);
-            font-family: 'Courier New', monospace; /* monospace 讓數字對齊更有序 */
+        /* 價格與數據 */
+        .price {
+            color: white;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        
+        .volume {
+            color: var(--text-main);
+            font-family: 'Courier New', monospace;
+        }
+
+        .price-up {
+            color: var(--up-color);
             font-weight: bold;
         }
 
-        .price {
-            color: #d1d5db;
+        .price-down {
+            color: var(--down-color);
             font-weight: bold;
-            font-size: 1.1em;
         }
 
         /* 載入與錯誤狀態 */
@@ -195,13 +195,12 @@
             font-size: 1.2em;
             font-weight: bold;
         }
-        .error-msg { color: #ef4444; }
 
         /* --- 專屬頁尾 --- */
         footer {
             width: 100%;
             text-align: center;
-            padding: 25px 0;
+            padding: 20px 0;
             background-color: var(--card-bg);
             border-top: 1px solid var(--border-color);
             position: fixed;
@@ -209,7 +208,16 @@
             color: var(--text-sub);
             font-size: 0.95em;
             letter-spacing: 0.5px;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.2);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.4);
+            z-index: 10;
+        }
+        
+        /* 響應式設計：讓手機看也舒服 */
+        @media (max-width: 768px) {
+            th, td { padding: 15px 10px; font-size: 0.9em; }
+            .volume-col { display: none; } /* 手機版空間有限，隱藏交易量 */
+            .coin-name { display: block; }
+            .coin-symbol { margin-left: 0; }
         }
 
     </style>
@@ -222,25 +230,27 @@
     
     <div class="container">
         <div class="tools-bar">
-            <div class="update-time" id="updateTime">正在初始化...</div>
-            <a href="https://www.coingecko.com/" target="_blank" class="data-source">資料來源：CoinGecko API</a>
+            <div class="update-time" id="updateTime">正在同步數據...</div>
         </div>
         
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 10%">熱度</th>
-                    <th style="width: 45%">加密貨幣 (代號)</th>
-                    <th style="width: 20%">市值排名</th>
-                    <th style="width: 25%">目前價格 (USD)</th>
-                </tr>
-            </thead>
-            <tbody id="cryptoTableBody">
-                <tr>
-                    <td colspan="4" class="state-msg">正在載入數據，請稍候...</td>
-                </tr>
-            </tbody>
-        </table>
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 8%">熱度</th>
+                        <th style="width: 32%">加密貨幣</th>
+                        <th style="width: 20%">價格 (USD)</th>
+                        <th style="width: 15%">24H 漲跌幅</th>
+                        <th style="width: 25%" class="volume-col">24H 交易量</th>
+                    </tr>
+                </thead>
+                <tbody id="cryptoTableBody">
+                    <tr>
+                        <td colspan="5" class="state-msg">正在載入即時盤面數據...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <footer>
@@ -258,11 +268,11 @@
                 renderTable(data.coins);
                 
                 const now = new Date();
-                document.getElementById('updateTime').innerText = `最後同步：${now.toLocaleTimeString()}`;
+                document.getElementById('updateTime').innerText = `最後更新：${now.toLocaleTimeString('zh-TW', { hour12: false })}`;
             } catch (error) {
                 console.error("Fetch error:", error);
                 document.getElementById('cryptoTableBody').innerHTML = `
-                    <tr><td colspan="4" class="state-msg error-msg">無法存取即時數據，可能受 API 頻率限制，請稍後重試。</td></tr>
+                    <tr><td colspan="5" class="state-msg" style="color: #ef4444;">無法連線至報價伺服器，請稍後重新整理。</td></tr>
                 `;
             }
         }
@@ -273,7 +283,23 @@
 
             coins.forEach((item, index) => {
                 const coin = item.item;
+                
+                // 處理價格
                 const price = coin.data && coin.data.price ? coin.data.price : '暫無報價';
+                
+                // 處理 24H 交易量
+                const volume24h = coin.data && coin.data.total_volume ? coin.data.total_volume : '-';
+
+                // 處理 24H 漲跌幅 (判斷正負數來決定顏色與符號)
+                let changeHtml = '<span style="color: #8b949e">-</span>';
+                const changeValue = coin.data?.price_change_percentage_24h?.usd;
+                
+                if (changeValue !== undefined && changeValue !== null) {
+                    const isPositive = changeValue >= 0;
+                    const sign = isPositive ? '+' : '';
+                    const colorClass = isPositive ? 'price-up' : 'price-down';
+                    changeHtml = `<span class="${colorClass}">${sign}${changeValue.toFixed(2)}%</span>`;
+                }
                 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -289,14 +315,19 @@
                             </div>
                         </div>
                     </td>
-                    <td><span class="mcap-rank">${coin.market_cap_rank ? '#' + coin.market_cap_rank : '未排名'}</span></td>
                     <td><span class="price">${price}</span></td>
+                    <td>${changeHtml}</td>
+                    <td class="volume-col"><span class="volume">${volume24h}</span></td>
                 `;
                 tableBody.appendChild(row);
             });
         }
 
+        // 載入完成立即執行
         window.onload = fetchTrendingCrypto;
+        
+        // 設定每 60 秒自動刷新一次數據 (可選功能，讓它一直開著也會自動更新)
+        setInterval(fetchTrendingCrypto, 60000); 
     </script>
 
 </body>
